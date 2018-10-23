@@ -9,9 +9,9 @@ namespace ActiveRecordPattern
         public int? Id { get; set; }
         public string Name { get; set; }
         public int Age { get; set; }
-        public decimal TotalPurchases { get; set; }
+        public double TotalPurchases { get; set; }
 
-        public Customer(int id, string name, int age, decimal totalPurchases)
+        public Customer(int id, string name, int age, double totalPurchases)
         {
             Id = id;
             Name = name;
@@ -27,7 +27,7 @@ namespace ActiveRecordPattern
                 using (SqliteCommand command = connection.CreateCommand())
                 {
                     command.CommandType = CommandType.Text;
-                    command.CommandText = "SELECT TOP 1 * FROM [Customer] WHERE [Id] = @Id";
+                    command.CommandText = "SELECT * FROM CUSTOMER WHERE Id = @Id LIMIT 1";
                     command.Parameters.AddWithValue("@Id", id);
 
                     SqliteDataReader reader = command.ExecuteReader();
@@ -37,8 +37,8 @@ namespace ActiveRecordPattern
                         reader.Read();
 
                         var name = (string)reader["Name"];
-                        var age = (int)reader["Age"];
-                        var totalPurchases = (decimal)reader["TotalPurchases"];
+                        var age = (int)(long)reader["Age"];
+                        var totalPurchases = (double)reader["TotalPurchases"];
 
                         return new Customer(id, name, age, totalPurchases);
                     }
@@ -91,5 +91,10 @@ namespace ActiveRecordPattern
         // Other methods (e.g. All(), FindBy*(), etc.) are usually provided in ORMs and
         // Active Record Pattern Implementations ..
         //
+
+        public override string ToString()
+        {
+            return $"{Id} - Name: {Name} - Age: {Age} - Total Purchase: {TotalPurchases}";
+        }
     }
 }

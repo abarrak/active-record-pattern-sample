@@ -5,6 +5,6 @@ namespace ActiveRecordPattern
     public class DbConnection
     {
         public static SqliteConnection Connection { get; } =
-            new SqliteConnection("" + new SqliteConnectionStringBuilder() { DataSource = "app-db.db" });
+            new SqliteConnection("" + new SqliteConnectionStringBuilder() { DataSource = "Database/app-db.db" });
     }
 }

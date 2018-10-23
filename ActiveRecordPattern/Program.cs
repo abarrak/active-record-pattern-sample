@@ -6,7 +6,20 @@ namespace ActiveRecordPattern
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Active Record Pattern Sample");
+            Console.WriteLine("============================");
+
+            // Reading ..
+            Console.WriteLine(Customer.Find(1));
+
+            // Saving ..
+            Console.WriteLine(Customer.Find(1));
+
+            // Deleting
+            // Console.WriteLine(Customer.Find(1));
+
+            Console.WriteLine("============================");
+            Console.ReadKey();
         }
     }
 }

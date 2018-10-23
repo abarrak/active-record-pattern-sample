@@ -11,4 +11,7 @@
   <ItemGroup>
     <Folder Include="Database\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Database\dapp-db.db" />
+  </ItemGroup>
 </Project>
