@@ -11,12 +11,12 @@ namespace ActiveRecordPattern
 
             // Reading ..
             Console.WriteLine(Customer.Find(1));
+            Console.WriteLine(Customer.Find(2));
+            Console.WriteLine(Customer.Find(3));
 
             // Saving ..
-            Console.WriteLine(Customer.Find(1));
 
             // Deleting
-            // Console.WriteLine(Customer.Find(1));
 
             Console.WriteLine("============================");
             Console.ReadKey();
