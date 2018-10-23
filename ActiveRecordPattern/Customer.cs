@@ -11,12 +11,12 @@ namespace ActiveRecordPattern
         public int Age { get; set; }
         public double TotalPurchases { get; set; }
 
-        public Customer(int id, string name, int age, double totalPurchases)
+        public Customer(string name, int age, double totalPurchases, int? id = null)
         {
-            Id = id;
             Name = name;
             Age = age;
             TotalPurchases = totalPurchases;
+            Id = id;
         }
 
         public static Customer Find(int id)
@@ -27,7 +27,7 @@ namespace ActiveRecordPattern
                 using (SqliteCommand command = connection.CreateCommand())
                 {
                     command.CommandType = CommandType.Text;
-                    command.CommandText = "SELECT * FROM CUSTOMER WHERE Id = @Id LIMIT 1";
+                    command.CommandText = "SELECT * FROM Customer WHERE Id = @Id LIMIT 1";
                     command.Parameters.AddWithValue("@Id", id);
 
                     SqliteDataReader reader = command.ExecuteReader();
@@ -40,33 +40,63 @@ namespace ActiveRecordPattern
                         var age = (int)(long)reader["Age"];
                         var totalPurchases = (double)reader["TotalPurchases"];
 
-                        return new Customer(id, name, age, totalPurchases);
+                        return new Customer(name, age, totalPurchases, id);
                     }
                 }
             }
             return null;
         }
 
-        public void Save()
+        public bool Save()
         {
             if (Id == null || Id == 0)
             {
-                Add();
+                return Add();
             }
             else
             {
-                Update();
+                return Update();
             }
 
         }
 
         public bool Add()
         {
+            using (SqliteConnection connection = DbConnection.Connection)
+            {
+                connection.Open();
+
+                using (SqliteCommand command = connection.CreateCommand())
+                {
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = "INSERT INTO Customer VALUES(NULL, @N, @A, 1000.5)";
+                    command.Parameters.AddWithValue("@Id", Id);
+                    command.Parameters.AddWithValue("@N", Name);
+                    command.Parameters.AddWithValue("@A", Age);
+                    command.Parameters.AddWithValue("@TP", TotalPurchases);
+                    command.ExecuteNonQuery();
+                }
+            }
             return true;
         }
 
         public bool Update() 
         {
+            using (SqliteConnection connection = DbConnection.Connection)
+            {
+                connection.Open();
+
+                using (SqliteCommand command = connection.CreateCommand())
+                {
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = "UPDATE Customer SET Name = @N, Age = @A, TotalPurchases = @TP WHERE Id = @Id";
+                    command.Parameters.AddWithValue("@Id", Id);
+                    command.Parameters.AddWithValue("@N", Name);
+                    command.Parameters.AddWithValue("@A", Age);
+                    command.Parameters.AddWithValue("@TP", TotalPurchases);
+                    command.ExecuteNonQuery();
+                }
+            }
             return true;
         }
 
@@ -79,7 +109,7 @@ namespace ActiveRecordPattern
                 using (SqliteCommand command = connection.CreateCommand())
                 {
                     command.CommandType = CommandType.Text;
-                    command.CommandText = "DELETE FROM [Customer] WHERE [Id] = @Id";
+                    command.CommandText = "DELETE FROM Customer WHERE Id = @Id";
                     command.Parameters.AddWithValue("@Id", Id);
                     command.ExecuteNonQuery();
                 }
@@ -87,8 +117,36 @@ namespace ActiveRecordPattern
             return true;
         }
 
+        public static Customer Last() 
+        {
+            using (var connection = DbConnection.Connection)
+            {
+                connection.Open();
+                using (SqliteCommand command = connection.CreateCommand())
+                {
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = "SELECT * FROM Customer Order By Id DESC LIMIT 1";
+
+                    SqliteDataReader reader = command.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+
+                        var id = (int)(long)reader["Id"];
+                        var name = (string)reader["Name"];
+                        var age = (int)(long)reader["Age"];
+                        var totalPurchases = (double)reader["TotalPurchases"];
+
+                        return new Customer(name, age, totalPurchases, id);
+                    }
+                }
+            }
+            return null;
+        }
+
         //
-        // Other methods (e.g. All(), FindBy*(), etc.) are usually provided in ORMs and
+        // Other methods (e.g. All(), FindBy*(), First(), Last(), etc.) are usually provided in ORMs and
         // Active Record Pattern Implementations ..
         //
 
